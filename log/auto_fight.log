@@ -86,3 +86,7 @@
 2024-05-08 06:08:14,054 - INFO - Template found and clicked.
 2024-05-08 06:08:49,005 - INFO - Operation timed out after 30 retries not found target.
 2024-05-08 06:08:49,005 - INFO - Waiting for continue key ('c')...
+2024-05-08 06:09:24,873 - INFO - Continue key pressed. Resuming operation.
+2024-05-08 06:10:00,331 - INFO - Operation timed out after 30 retries not found target.
+2024-05-08 06:10:00,331 - INFO - Waiting for continue key ('c')...
+2024-05-08 06:10:14,991 - INFO - Program interrupted by user.
