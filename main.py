@@ -21,15 +21,13 @@ start_time = time.time()
 continue_key = 'c'
 
 # 设置超时监听的按键，这里以 'esc' 为例
-keyboard.add_hotkey('esc', lambda: play_beep(), suppress=True)
+keyboard.add_hotkey('esc', lambda: wait_for_continue_key(), suppress=True)
 
 def play_beep():
     winsound.Beep(1200, 1000)
 
 def play_confirm_beep():
-    # 系统蜂鸣
-    frequency = 1500  # 设置频率为 1500 赫兹
-    duration = 50  # 设置持续时间为 100 毫秒
+
     winsound.Beep(800, 100)
     # beep twice
     time.sleep(0.25)
@@ -60,29 +58,34 @@ def wait_for_continue_key():
 try:
     retry_count=0
     while True:
-        try:
-            # 尝试在屏幕上进行模糊匹配
-            pos = pyautogui.locateOnScreen(template_path, confidence=confidence, grayscale=True)
-        except pyautogui.ImageNotFoundException:
-            # 继续循环前等待用户输入
-            if(retry_count<60):
-                time.sleep(1)
-                retry_count+=1
-                continue
-            log_status("Operation timed out after 60 retries not found target.")
-            wait_for_continue_key()
-            retry_count=0
-
-            continue  # 继续下一次循环
+        if not keyboard.is_pressed('esc'):
+            try:
+                # 尝试在屏幕上进行模糊匹配
+                pos = pyautogui.locateOnScreen(template_path, confidence=confidence, grayscale=True)
+            except pyautogui.ImageNotFoundException:
+                # 继续循环前等待用户输入
+                if(retry_count<60):
+                    time.sleep(1)
+                    retry_count+=1
+                    continue
+                log_status("Operation timed out after 60 retries not found target.")
+                wait_for_continue_key()
+                retry_count=0
+                continue  # 继续下一次循环
+            else:
+                # 成功匹配到模板，模拟点击事件
+                pyautogui.click(pos)
+                pyautogui.press(p_key)
+                time.sleep(0.5)
+                pyautogui.press(enter_key)
+                time.sleep(3)
+                log_status("Template found and clicked.")
+                retry_count=0
+                start_time = time.time()  # 重新计时
         else:
-            # 成功匹配到模板，模拟点击事件
-            pyautogui.press(p_key)
-            time.sleep(0.5)
-            pyautogui.press(enter_key)
-            time.sleep(0.5)
-            start_time = time.time()  # 重新计时
+            wait_for_continue_key()
+            start_time = time.time()
             retry_count=0
-            log_status("Template found and clicked.")
 
 except KeyboardInterrupt:
     # 处理 Ctrl + C 中断
